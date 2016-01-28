@@ -42,17 +42,17 @@ body {
 			width: 0;
 			height: 0;
 			border: 35px solid transparent;
-			border-top-color: #95ff75;
-			border-bottom-color: #95ff75;
+			border-top-color: #80dd63;
+			border-bottom-color: #80dd63;
 		}
 
 		&.active {
-			width: 86px;
-			height: 86px;
+			width: 84px;
+			height: 84px;
 
 			&:after {
-				border-width: 43px;
-				animation: spinner 3s linear infinite;
+				border-width: 42px;
+				animation: spinner 2s linear infinite;
 			}
 		}
 	}
@@ -115,6 +115,7 @@ body {
 			box-shadow: none;
 			background: #2c2c2c;
 			cursor: default;
+		  	pointer-events: none;
 		}
 	}
 }

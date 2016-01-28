@@ -3,16 +3,34 @@
 
 	var audioCtx = new window.AudioContext(),
 		audioSrc = audioCtx.createBufferSource(),
-		canvas, canvasCtx;
+		canvas, canvasCtx, audioFile;
+
+	function resetCanvas(){
+		canvasCtx.fillStyle = '#2c2c2c';
+		canvasCtx.fillRect(0,0,canvas.width,canvas.height);
+	}
 
 	function loadPlayer(){
 		canvas = document.querySelector('canvas');
 		canvasCtx = canvas.getContext('2d');
 
-		canvas.width = window.getComputedStyle(canvas).width;
-		canvas.height = window.getComputedStyle(canvas).height;
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
 
 		document.querySelector('.spinner').classList.add('overlay');
+		setTimeout(function(){
+			var player;
+
+			resetCanvas();
+			document.querySelector('.spinner').style.display = 'none';
+
+			player = document.querySelector('.player');
+			player.querySelector('h1').innerText = (function(){
+				var parts = audioFile.name.split('.');
+				parts.pop();
+				return parts.join('.');
+			}());
+		}, 1000);
 	}
 
 	function parseFile(f){
@@ -27,6 +45,12 @@
 
 			writeLog('Finished!');
 			writeLog('Decoding audio file');
+
+			audioFile = {
+				name: f.name,
+				size: f.size,
+				type: f.type
+			};
 
 			audioCtx.decodeAudioData(reader.result, function(buffer){
 				clearInterval(interval);
