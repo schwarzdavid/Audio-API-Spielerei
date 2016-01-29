@@ -7,13 +7,17 @@
 		canvas, canvasCtx, audioFile;
 
 	function startPlayer(){
-		setTimeout(function(){
-			audioSrc.start(0);
-		}, 1000);
+		var dataArray = new Uint8Array(audioAnalyser.frequencyBinCount);
+		audioAnalyser.getByteFrequencyData(dataArray);
+
+		audioSrc.start(50);
 
 		window.requestAnimationFrame(function play(){
-			console.log(audioCtx.state);
-			window.requestAnimationFrame(play);
+			console.log(dataArray);
+
+			if(audioCtx.currentTime <= audioFile.duration) {
+				window.requestAnimationFrame(play);
+			}
 		});
 	}
 
@@ -72,6 +76,8 @@
 				clearInterval(interval);
 				writeLog('Finished!');
 
+				audioFile.duration = buffer.duration;
+
 				audioSrc.buffer = buffer;
 
 				loadPlayer();
@@ -87,6 +93,7 @@
 	document.addEventListener('DOMContentLoaded', function(){
 		audioSrc.connect(audioAnalyser);
 		audioAnalyser.connect(audioCtx.destination);
+		audioAnalyser.fftSize = 2048;
 
 		document.querySelector('.spinner .filepicker').addEventListener('click', function(e){
 			e.preventDefault();
