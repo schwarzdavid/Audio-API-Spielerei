@@ -7,17 +7,34 @@
 		canvas, canvasCtx, audioFile;
 
 	function startPlayer(){
-		var dataArray = new Uint8Array(audioAnalyser.frequencyBinCount);
-		audioAnalyser.getByteFrequencyData(dataArray);
+		var dataArray = new Uint8Array(audioAnalyser.frequencyBinCount / 5.05),
+			factor = 1.4;
 
-		audioSrc.start(50);
+		audioSrc.start(0);
+		canvasCtx.strokeStyle = '#FFFFFF';
+
+		var maxLength = 0;
 
 		window.requestAnimationFrame(function play(){
-			console.log(dataArray);
+			audioAnalyser.getByteFrequencyData(dataArray);
+			resetCanvas();
 
-			if(audioCtx.currentTime <= audioFile.duration) {
-				window.requestAnimationFrame(play);
+			canvasCtx.beginPath();
+			canvasCtx.moveTo(-1, canvas.height);
+			canvasCtx.lineTo(-1, canvas.height - (dataArray[i] * factor));
+
+			for(var i = 0; i < dataArray.length; i++){
+				canvasCtx.lineTo(i*(canvas.width / dataArray.length), canvas.height - (dataArray[i] * factor));
 			}
+
+			canvasCtx.lineTo(canvas.width + 1, canvas.height - (dataArray[dataArray.length - 1] * factor));
+			canvasCtx.lineTo(canvas.width + 1, canvas.height);
+
+			canvasCtx.fillStyle = 'rgba(0,0,0,.4)';
+			canvasCtx.stroke();
+			canvasCtx.fill();
+
+			window.requestAnimationFrame(play);
 		});
 	}
 
@@ -93,7 +110,7 @@
 	document.addEventListener('DOMContentLoaded', function(){
 		audioSrc.connect(audioAnalyser);
 		audioAnalyser.connect(audioCtx.destination);
-		audioAnalyser.fftSize = 2048;
+		audioAnalyser.fftSize = 4096;
 
 		document.querySelector('.spinner .filepicker').addEventListener('click', function(e){
 			e.preventDefault();
@@ -109,10 +126,6 @@
 				document.querySelector('.spinner .circle').classList.add('active');
 				parseFile(e.target.files[0]);
 			}
-		});
-
-		document.querySelector('.player div img').addEventListener('click', function(){
-
 		});
 	});
 }());
